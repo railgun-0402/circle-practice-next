@@ -14,7 +14,7 @@ jobs:
       - checkout
       - run:
           name: Show build log
-          command: echo "✅ Hello from CircleCI - Next.js Project!"
+          command: echo "✅ CircleCI - Next.js Project!"
 
   # gitを構築して、タグを作成してみよう
   tag:
