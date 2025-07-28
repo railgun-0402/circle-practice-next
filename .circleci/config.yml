@@ -28,8 +28,8 @@ jobs:
       - run:
           name: Configure Git
           command: |
-            git config user.email "ci-bot@example.com"
-            git config user.name "CircleCI Bot"
+            git config user.email "${GIT_USER_EMAIL}"
+            git config user.name "${GIT_USER_NAME}"
       - run:
           name: Create and Push Tag
           command: |
