@@ -1,0 +1,50 @@
+version: 2.1
+
+executors:
+  node:
+    docker:
+      - image: cimg/node:20.17
+    working_directory: ~/repo
+
+jobs:
+  # echoでログ出すだけw
+  build:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Show build log
+          command: echo "✅ Hello from CircleCI - Next.js Project!"
+
+  # gitを構築して、タグを作成してみよう
+  tag:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install git
+          command: |
+            sudo apt-get update && sudo apt-get install -y git
+      - run:
+          name: Configure Git
+          command: |
+            git config user.email "ci-bot@example.com"
+            git config user.name "CircleCI Bot"
+      - run:
+          name: Create and Push Tag
+          command: |
+            DATE=$(date +'%Y%m%d')
+            TAG_NAME="next-${DATE}"
+            echo "📌 Creating tag: ${TAG_NAME}"
+            git tag "${TAG_NAME}"
+            git push https://${GH_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git "${TAG_NAME}"
+
+workflows:
+  version: 2
+  build_and_tag:
+    jobs:
+      - build
+      - tag:
+          # buildの成功が必須
+          requires:
+            - build
