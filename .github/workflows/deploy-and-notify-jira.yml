@@ -1,0 +1,52 @@
+name: Deploy and Notify JIRA
+
+on:
+  push:
+    tags:
+      - stg-*
+
+jobs:
+  notify-jira:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Echo fake deploy
+        uses: echo "🚀 Fake deploy to staging..."
+
+      # 最新のコミットメッセージを取得し、出力変数に値を設定する
+      - name: Extract JIRA issue key from last commit
+        id: extract
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "📝 Commit message: $COMMIT_MSG"
+          ISSUE_KEY=$(echo "COMMIT_MSG" | grep -Eo 'SCRUM-[0-9]+' | head -n 1 || echo "NO-ISSUE")
+          echo "issue_key=$ISSUE_KEY" >> $GITHUB_OUTPUT
+
+      - name: Notify JIRA of deployment
+        if: steps.extract.outputs.issue_key != 'NO-ISSUE'
+        run: |
+          curl -X POST "https://${{ secrets.JIRA_SITE }}/rest/deployments/0.1/cloud" \
+          -u "${{ secrets.JIRA_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "deployments": [
+              {
+                "deploymentSequenceNumber": '"${{ github.run_number }}"',
+                "updateSequenceNumber": '"${{ github.run_number }}"',
+                "displayName": "GitHub Actions Deploy",
+                "description": "Triggered by tag push",
+                "url": "https://github.com/'"${{ github.repository }}"'/actions/runs/'"${{ github.run_id }}"'",
+                "environment": {
+                  "id": "staging",
+                  "displayName": "Staging",
+                  "type": "staging"
+                },
+                "associations": {
+                  "issueKeys": ["${{ steps.extract.outputs.issue_key }}"]
+                }
+              }
+            ]
+          }'

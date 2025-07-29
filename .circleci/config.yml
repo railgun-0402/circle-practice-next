@@ -34,7 +34,7 @@ jobs:
           name: Create and Push Tag
           command: |
             DATE=$(date +'%Y%m%d')
-            TAG_NAME="next-${DATE}"
+            TAG_NAME="stg-${DATE}"
             echo "📌 Creating tag: ${TAG_NAME}"
             git tag "${TAG_NAME}"
             git push https://${GH_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git "${TAG_NAME}"
