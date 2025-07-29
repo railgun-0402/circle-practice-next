@@ -25,6 +25,7 @@ jobs:
           ISSUE_KEY=$(echo "COMMIT_MSG" | grep -Eo 'SCRUM-[0-9]+' | head -n 1 || echo "NO-ISSUE")
           echo "issue_key=$ISSUE_KEY" >> $GITHUB_OUTPUT
 
+        # JIRA通知
       - name: Notify JIRA of deployment
         if: steps.extract.outputs.issue_key != 'NO-ISSUE'
         run: |
