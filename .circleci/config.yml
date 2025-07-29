@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Create and Push Tag
           command: |
-            DATE=$(date +'%Y%m%d')
+            DATE=$(date +'%Y%m%d-%H%M%S')
             TAG_NAME="stg-${DATE}"
             echo "📌 Creating tag: ${TAG_NAME}"
             git tag "${TAG_NAME}"
