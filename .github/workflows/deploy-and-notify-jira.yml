@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Echo fake deploy
-        uses: echo "🚀 Fake deploy to staging..."
+        run: echo "🚀 Fake deploy to staging..."
 
       # 最新のコミットメッセージを取得し、出力変数に値を設定する
       - name: Extract JIRA issue key from last commit
